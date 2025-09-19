@@ -262,6 +262,57 @@ class StadtwacheAPITester:
         return self.run_test("Admin Update Homepage", "PUT", "admin/homepage", 200, 
                            data=homepage_data, files={}, auth_required=True)
 
+    # ADMIN REPORTS MANAGEMENT TESTS
+    def test_admin_get_reports(self):
+        """Test admin getting all reports"""
+        success, response = self.run_test("Admin Get Reports", "GET", "admin/reports", 200, auth_required=True)
+        if success and isinstance(response, list):
+            print(f"   Found {len(response)} reports")
+            for i, report in enumerate(response):
+                if isinstance(report, dict):
+                    incident_type = report.get('incident_type', 'Unknown')
+                    status = report.get('status', 'unknown')
+                    reporter = report.get('reporter_name', 'Unknown')
+                    print(f"   Report {i+1}: {incident_type} - {reporter} - {status}")
+        return success, response
+
+    def test_admin_update_report_status(self):
+        """Test admin updating report status"""
+        if not hasattr(self, 'created_report_id') or not self.created_report_id:
+            print("   ⚠️  No report ID available for status update test")
+            return False, {}
+        
+        # Test updating to 'in_progress'
+        status_data = {"status": "in_progress"}
+        success, response = self.run_test(
+            "Admin Update Report Status", 
+            "PUT", 
+            f"admin/reports/{self.created_report_id}/status", 
+            200, 
+            data=status_data, 
+            files={},  # Use form data
+            auth_required=True
+        )
+        
+        if success and isinstance(response, dict):
+            new_status = response.get('status')
+            if new_status == 'in_progress':
+                print(f"   ✅ Status updated to: {new_status}")
+            else:
+                print(f"   ⚠️  Status update issue - Expected 'in_progress', got: {new_status}")
+        
+        return success, response
+
+    def test_admin_get_report_stats(self):
+        """Test admin getting report statistics"""
+        success, response = self.run_test("Admin Get Report Stats", "GET", "admin/reports/stats", 200, auth_required=True)
+        if success and isinstance(response, dict):
+            total = response.get('total_reports', 0)
+            new = response.get('new_reports', 0)
+            urgent = response.get('urgent_reports', 0)
+            print(f"   Stats - Total: {total}, New: {new}, Urgent: {urgent}")
+        return success, response
+
     # ERROR HANDLING TESTS
     def test_invalid_file_upload(self):
         """Test application with invalid file type"""
