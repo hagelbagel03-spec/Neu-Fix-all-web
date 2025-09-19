@@ -281,7 +281,7 @@ const AdminDashboard = ({ onLogout }) => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-7">
             <TabsTrigger value="reports">
               <FileText className="mr-2 h-4 w-4" />
               Online-Meldungen ({reports.filter(r => r.status === 'new').length})
@@ -297,6 +297,14 @@ const AdminDashboard = ({ onLogout }) => {
             <TabsTrigger value="feedback">
               <MessageSquare className="mr-2 h-4 w-4" />
               Feedback ({feedback.filter(fb => fb.status === 'new').length})
+            </TabsTrigger>
+            <TabsTrigger value="about">
+              <Users className="mr-2 h-4 w-4" />
+              Über uns
+            </TabsTrigger>
+            <TabsTrigger value="chat">
+              <MessageSquare className="mr-2 h-4 w-4" />
+              Chat-Widget
             </TabsTrigger>
             <TabsTrigger value="homepage">
               <Home className="mr-2 h-4 w-4" />
