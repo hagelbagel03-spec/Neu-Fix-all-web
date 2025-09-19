@@ -379,6 +379,8 @@ def main():
         tester.test_get_homepage,
         tester.test_get_news,
         tester.test_get_latest_news,
+        tester.test_get_report_types,  # NEW: Test report types
+        tester.test_create_report,     # NEW: Test report creation
         tester.test_create_application,
         tester.test_create_feedback,
     ]
@@ -392,6 +394,9 @@ def main():
         tester.test_admin_get_feedback,
         tester.test_admin_get_homepage,
         tester.test_admin_update_homepage,
+        tester.test_admin_get_reports,        # NEW: Test admin reports
+        tester.test_admin_update_report_status, # NEW: Test status updates
+        tester.test_admin_get_report_stats,   # NEW: Test report stats
     ]
     
     print("\n📋 PHASE 4: Error Handling Tests")
@@ -399,6 +404,7 @@ def main():
     error_tests = [
         tester.test_invalid_file_upload,
         tester.test_invalid_rating,
+        tester.test_invalid_report_data,  # NEW: Test invalid report data
     ]
     
     all_tests = auth_tests + public_tests + admin_tests + error_tests
