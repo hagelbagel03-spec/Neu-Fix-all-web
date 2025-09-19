@@ -400,8 +400,8 @@ const AdminDashboard = ({ onLogout }) => {
                                       <Button
                                         onClick={async () => {
                                           try {
-                                            await axios.put(`${API}/admin/reports/${report.id}/status`, {
-                                              status: 'in_progress'
+                                            await axios.put(`${API}/admin/reports/${report.id}`, {
+                                              status: 'under_review'
                                             });
                                             toast.success('Status aktualisiert');
                                             loadData();
