@@ -318,6 +318,47 @@ class AboutPageUpdate(BaseModel):
     values: Optional[str] = None
     history: Optional[str] = None
 
+class ChatMessage(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    visitor_name: str
+    visitor_email: EmailStr
+    message: str
+    admin_response: Optional[str] = None
+    status: str = Field(default="new")  # new, responded, closed
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    responded_at: Optional[datetime] = None
+
+class ChatMessageCreate(BaseModel):
+    visitor_name: str
+    visitor_email: EmailStr
+    message: str
+
+class ChatResponse(BaseModel):
+    message_id: str
+    admin_response: str
+
+class ChatButton(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    label: str
+    action: str  # "email", "phone", "link", "message"
+    value: str  # email address, phone number, URL, or predefined message
+    order: int = Field(default=0)
+    active: bool = Field(default=True)
+
+class ChatButtonCreate(BaseModel):
+    label: str
+    action: str
+    value: str
+    order: int = Field(default=0)
+    active: bool = Field(default=True)
+
+class ChatButtonUpdate(BaseModel):
+    label: Optional[str] = None
+    action: Optional[str] = None
+    value: Optional[str] = None
+    order: Optional[int] = None
+    active: Optional[bool] = None
+
 class ChatWidget(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     enabled: bool = Field(default=True)
