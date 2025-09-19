@@ -283,26 +283,40 @@ class StadtwacheAPITester:
             print("   ⚠️  No report ID available for status update test")
             return False, {}
         
-        # Test updating to 'in_progress'
-        status_data = {"status": "in_progress"}
-        success, response = self.run_test(
-            "Admin Update Report Status", 
-            "PUT", 
-            f"admin/reports/{self.created_report_id}/status", 
-            200, 
-            data=status_data, 
-            files={},  # Use form data
-            auth_required=True
-        )
+        # Test updating to 'in_progress' using form data
+        headers = {}
+        if self.admin_token:
+            headers['Authorization'] = f'Bearer {self.admin_token}'
         
-        if success and isinstance(response, dict):
-            new_status = response.get('status')
-            if new_status == 'in_progress':
-                print(f"   ✅ Status updated to: {new_status}")
+        try:
+            url = f"{self.api_url}/admin/reports/{self.created_report_id}/status"
+            form_data = {'status': 'in_progress'}
+            response = requests.put(url, data=form_data, headers=headers, timeout=10)
+            
+            success = response.status_code == 200
+            if success:
+                self.tests_passed += 1
+                print(f"✅ Admin Update Report Status - Passed - Status: {response.status_code}")
+                try:
+                    response_data = response.json()
+                    new_status = response_data.get('status')
+                    if new_status == 'in_progress':
+                        print(f"   ✅ Status updated to: {new_status}")
+                    else:
+                        print(f"   ⚠️  Status update issue - Expected 'in_progress', got: {new_status}")
+                    return True, response_data
+                except:
+                    print(f"   Response: {response.text[:100]}...")
+                    return True, {}
             else:
-                print(f"   ⚠️  Status update issue - Expected 'in_progress', got: {new_status}")
-        
-        return success, response
+                print(f"❌ Admin Update Report Status - Failed - Expected 200, got {response.status_code}")
+                print(f"   Response: {response.text[:200]}...")
+                return False, {}
+        except Exception as e:
+            print(f"❌ Admin Update Report Status - Failed - Error: {str(e)}")
+            return False, {}
+        finally:
+            self.tests_run += 1
 
     def test_admin_get_report_stats(self):
         """Test admin getting report statistics"""
