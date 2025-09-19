@@ -691,6 +691,101 @@ async def admin_get_report_stats(current_admin = Depends(get_current_admin)):
         "urgent_reports": urgent_reports
     }
 
+# Admin About Page Management
+@admin_router.get("/about")
+async def admin_get_about(current_admin = Depends(get_current_admin)):
+    about = await db.about.find_one()
+    if not about:
+        # Create default content
+        default_about = AboutPage()
+        about_dict = prepare_for_mongo(default_about.dict())
+        await db.about.insert_one(about_dict)
+        return default_about
+    return AboutPage(**about)
+
+@admin_router.put("/about")
+async def admin_update_about(
+    title: str = Form(None),
+    subtitle: str = Form(None),
+    content: str = Form(None),
+    mission: str = Form(None),
+    vision: str = Form(None),
+    values: str = Form(None),
+    history: str = Form(None),
+    about_image: UploadFile = File(None),
+    current_admin = Depends(get_current_admin)
+):
+    update_data = {}
+    
+    # Handle form data
+    if title: update_data["title"] = title
+    if subtitle: update_data["subtitle"] = subtitle
+    if content: update_data["content"] = content
+    if mission: update_data["mission"] = mission
+    if vision: update_data["vision"] = vision
+    if values: update_data["values"] = values
+    if history: update_data["history"] = history
+    
+    # Handle image upload
+    if about_image and about_image.filename:
+        file_extension = about_image.filename.split('.')[-1].lower()
+        if file_extension not in ['jpg', 'jpeg', 'png', 'webp']:
+            raise HTTPException(status_code=400, detail="Nur JPG, PNG und WEBP Bilder sind erlaubt")
+        
+        image_filename = f"about_{uuid.uuid4()}.{file_extension}"
+        image_path = UPLOAD_DIR / image_filename
+        
+        with open(image_path, "wb") as buffer:
+            shutil.copyfileobj(about_image.file, buffer)
+        
+        update_data["image"] = image_filename
+    
+    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    # Check if about page exists
+    existing = await db.about.find_one()
+    if existing:
+        await db.about.update_one({}, {"$set": update_data})
+    else:
+        default_about = AboutPage(**update_data)
+        about_dict = prepare_for_mongo(default_about.dict())
+        await db.about.insert_one(about_dict)
+    
+    updated_about = await db.about.find_one()
+    return AboutPage(**updated_about)
+
+# Admin Chat Widget Management
+@admin_router.get("/chat-widget")
+async def admin_get_chat_widget(current_admin = Depends(get_current_admin)):
+    chat = await db.chat_widget.find_one()
+    if not chat:
+        # Create default content
+        default_chat = ChatWidget()
+        chat_dict = prepare_for_mongo(default_chat.dict())
+        await db.chat_widget.insert_one(chat_dict)
+        return default_chat
+    return ChatWidget(**chat)
+
+@admin_router.put("/chat-widget")
+async def admin_update_chat_widget(
+    chat_update: ChatWidgetUpdate, 
+    current_admin = Depends(get_current_admin)
+):
+    update_data = {k: v for k, v in chat_update.dict().items() if v is not None}
+    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    # Check if chat widget exists
+    existing = await db.chat_widget.find_one()
+    if existing:
+        await db.chat_widget.update_one({}, {"$set": update_data})
+    else:
+        default_chat = ChatWidget(**update_data)
+        chat_dict = prepare_for_mongo(default_chat.dict())
+        await db.chat_widget.insert_one(chat_dict)
+    
+    updated_chat = await db.chat_widget.find_one()
+    return ChatWidget(**updated_chat)
+
 # Admin Applications Management
 @admin_router.get("/applications", response_model=List[Application])
 async def admin_get_applications(current_admin = Depends(get_current_admin)):
