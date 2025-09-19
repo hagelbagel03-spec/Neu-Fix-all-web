@@ -423,10 +423,7 @@ const AdminDashboard = ({ onLogout }) => {
                         </div>
                       </div>
                       <h3 className="font-semibold text-lg mb-2">{item.title}</h3>
-                      <div 
-                        className="text-slate-600 mb-2"
-                        dangerouslySetInnerHTML={{ __html: item.content }}
-                      />
+                      <p className="text-slate-600 mb-2">{item.content}</p>
                       <p className="text-sm text-slate-500">
                         {new Date(item.date).toLocaleDateString('de-DE')}
                       </p>
