@@ -117,7 +117,8 @@ const AdminLogin = ({ onLogin }) => {
 
 // Admin Dashboard Component
 const AdminDashboard = ({ onLogout }) => {
-  const [activeTab, setActiveTab] = useState('news');
+  const [activeTab, setActiveTab] = useState('reports');
+  const [reports, setReports] = useState([]);
   const [news, setNews] = useState([]);
   const [applications, setApplications] = useState([]);
   const [feedback, setFeedback] = useState([]);
