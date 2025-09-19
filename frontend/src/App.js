@@ -417,8 +417,8 @@ const AdminDashboard = ({ onLogout }) => {
                                       <Button
                                         onClick={async () => {
                                           try {
-                                            await axios.put(`${API}/admin/reports/${report.id}/status`, {
-                                              status: 'resolved'
+                                            await axios.put(`${API}/admin/reports/${report.id}`, {
+                                              status: 'completed'
                                             });
                                             toast.success('Status aktualisiert');
                                             loadData();
