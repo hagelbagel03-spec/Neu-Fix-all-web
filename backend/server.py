@@ -808,6 +808,76 @@ async def admin_update_about(
     updated_about = await db.about.find_one()
     return AboutPage(**updated_about)
 
+# Admin Chat Messages Management
+@admin_router.get("/chat/messages", response_model=List[ChatMessage])
+async def admin_get_chat_messages(current_admin = Depends(get_current_admin)):
+    messages = await db.chat_messages.find().sort("created_at", -1).to_list(1000)
+    return [ChatMessage(**msg) for msg in messages]
+
+@admin_router.put("/chat/messages/{message_id}/respond")
+async def admin_respond_to_chat(
+    message_id: str,
+    response: ChatResponse,
+    current_admin = Depends(get_current_admin)
+):
+    update_data = {
+        "admin_response": response.admin_response,
+        "status": "responded",
+        "responded_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    result = await db.chat_messages.update_one({"id": message_id}, {"$set": update_data})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Chat message not found")
+    
+    updated_message = await db.chat_messages.find_one({"id": message_id})
+    return ChatMessage(**updated_message)
+
+@admin_router.get("/chat/stats")
+async def admin_get_chat_stats(current_admin = Depends(get_current_admin)):
+    total_messages = await db.chat_messages.count_documents({})
+    new_messages = await db.chat_messages.count_documents({"status": "new"})
+    
+    return {
+        "total_messages": total_messages,
+        "new_messages": new_messages
+    }
+
+# Admin Chat Buttons Management
+@admin_router.get("/chat/buttons", response_model=List[ChatButton])
+async def admin_get_chat_buttons(current_admin = Depends(get_current_admin)):
+    buttons = await db.chat_buttons.find().sort("order", 1).to_list(100)
+    return [ChatButton(**btn) for btn in buttons]
+
+@admin_router.post("/chat/buttons", response_model=ChatButton)
+async def admin_create_chat_button(button: ChatButtonCreate, current_admin = Depends(get_current_admin)):
+    button_obj = ChatButton(**button.dict())
+    button_dict = prepare_for_mongo(button_obj.dict())
+    await db.chat_buttons.insert_one(button_dict)
+    return button_obj
+
+@admin_router.put("/chat/buttons/{button_id}", response_model=ChatButton)
+async def admin_update_chat_button(
+    button_id: str, 
+    button_update: ChatButtonUpdate, 
+    current_admin = Depends(get_current_admin)
+):
+    update_data = {k: v for k, v in button_update.dict().items() if v is not None}
+    
+    result = await db.chat_buttons.update_one({"id": button_id}, {"$set": update_data})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Chat button not found")
+    
+    updated_button = await db.chat_buttons.find_one({"id": button_id})
+    return ChatButton(**updated_button)
+
+@admin_router.delete("/chat/buttons/{button_id}")
+async def admin_delete_chat_button(button_id: str, current_admin = Depends(get_current_admin)):
+    result = await db.chat_buttons.delete_one({"id": button_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Chat button not found")
+    return {"message": "Chat button deleted successfully"}
+
 # Admin Chat Widget Management
 @admin_router.get("/chat-widget")
 async def admin_get_chat_widget(current_admin = Depends(get_current_admin)):
