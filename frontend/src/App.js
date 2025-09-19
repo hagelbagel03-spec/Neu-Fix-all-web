@@ -2270,9 +2270,11 @@ function App() {
   const renderSection = () => {
     switch (activeSection) {
       case 'home':
-        return <HeroSection />;
+        return <HeroSection setActiveSection={setActiveSection} />;
       case 'news':
         return <NewsSection />;
+      case 'about':
+        return <AboutSection />;
       case 'report':
         return <OnlineReportForm />;
       case 'apply':
@@ -2282,7 +2284,7 @@ function App() {
       case 'contact':
         return <ContactSection setActiveSection={setActiveSection} />;
       default:
-        return <HeroSection />;
+        return <HeroSection setActiveSection={setActiveSection} />;
     }
   };
 
