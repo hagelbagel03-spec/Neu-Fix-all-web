@@ -2041,7 +2041,7 @@ function App() {
       case 'feedback':
         return <FeedbackForm />;
       case 'contact':
-        return <ContactSection />;
+        return <ContactSection setActiveSection={setActiveSection} />;
       default:
         return <HeroSection />;
     }
