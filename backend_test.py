@@ -246,25 +246,53 @@ class StadtwacheAPITester:
         return self.run_test("Invalid Admin Login", "POST", "admin/login", 401, data=login_data)
 
 def main():
-    print("🚀 Starting Stadtwache API Tests")
-    print("=" * 50)
+    print("🚀 Starting Comprehensive Stadtwache API Tests")
+    print("=" * 60)
     
     tester = StadtwacheAPITester()
     
-    # Test all endpoints
-    tests = [
-        tester.test_root_endpoint,
-        tester.test_get_news,
-        tester.test_create_news,
-        tester.test_create_application,
-        tester.test_get_applications,
-        tester.test_create_feedback,
-        tester.test_get_feedback,
-        tester.test_invalid_file_upload,
-        tester.test_invalid_rating
+    # Test sequence - order matters for some tests
+    print("\n📋 PHASE 1: Authentication Tests")
+    print("-" * 40)
+    auth_tests = [
+        tester.test_invalid_admin_login,
+        tester.test_admin_login,
+        tester.test_admin_me,
+        tester.test_unauthorized_admin_access,
     ]
     
-    for test in tests:
+    print("\n📋 PHASE 2: Public API Tests")
+    print("-" * 40)
+    public_tests = [
+        tester.test_root_endpoint,
+        tester.test_get_homepage,
+        tester.test_get_news,
+        tester.test_get_latest_news,
+        tester.test_create_application,
+        tester.test_create_feedback,
+    ]
+    
+    print("\n📋 PHASE 3: Admin API Tests")
+    print("-" * 40)
+    admin_tests = [
+        tester.test_admin_get_news,
+        tester.test_admin_create_news,
+        tester.test_admin_get_applications,
+        tester.test_admin_get_feedback,
+        tester.test_admin_get_homepage,
+        tester.test_admin_update_homepage,
+    ]
+    
+    print("\n📋 PHASE 4: Error Handling Tests")
+    print("-" * 40)
+    error_tests = [
+        tester.test_invalid_file_upload,
+        tester.test_invalid_rating,
+    ]
+    
+    all_tests = auth_tests + public_tests + admin_tests + error_tests
+    
+    for test in all_tests:
         try:
             test()
         except Exception as e:
@@ -272,14 +300,27 @@ def main():
             tester.tests_run += 1
     
     # Print final results
-    print("\n" + "=" * 50)
+    print("\n" + "=" * 60)
     print(f"📊 Final Results: {tester.tests_passed}/{tester.tests_run} tests passed")
     
     if tester.tests_passed == tester.tests_run:
         print("🎉 All tests passed!")
         return 0
     else:
-        print(f"⚠️  {tester.tests_run - tester.tests_passed} tests failed")
+        failed_count = tester.tests_run - tester.tests_passed
+        print(f"⚠️  {failed_count} tests failed")
+        
+        # Provide summary of what works and what doesn't
+        success_rate = (tester.tests_passed / tester.tests_run) * 100
+        print(f"📈 Success Rate: {success_rate:.1f}%")
+        
+        if success_rate >= 80:
+            print("✅ Most functionality is working - minor issues to fix")
+        elif success_rate >= 60:
+            print("⚠️  Some major issues need attention")
+        else:
+            print("❌ Significant problems - major fixes needed")
+        
         return 1
 
 if __name__ == "__main__":
