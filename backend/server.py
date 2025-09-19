@@ -508,6 +508,30 @@ async def get_report_types():
         ]
     }
 
+# About Page
+@api_router.get("/about")
+async def get_about_page():
+    about = await db.about.find_one()
+    if not about:
+        # Create default content
+        default_about = AboutPage()
+        about_dict = prepare_for_mongo(default_about.dict())
+        await db.about.insert_one(about_dict)
+        return default_about
+    return AboutPage(**about)
+
+# Chat Widget
+@api_router.get("/chat-widget")
+async def get_chat_widget():
+    chat = await db.chat_widget.find_one()
+    if not chat:
+        # Create default content
+        default_chat = ChatWidget()
+        chat_dict = prepare_for_mongo(default_chat.dict())
+        await db.chat_widget.insert_one(chat_dict)
+        return default_chat
+    return ChatWidget(**chat)
+
 # News routes - Public
 @api_router.get("/news", response_model=List[NewsItem])
 async def get_news():
