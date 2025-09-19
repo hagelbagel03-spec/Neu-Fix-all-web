@@ -8,13 +8,17 @@ class StadtwacheAPITester:
     def __init__(self, base_url="https://guard-apply-feedback.preview.emergentagent.com"):
         self.base_url = base_url
         self.api_url = f"{base_url}/api"
+        self.admin_token = None
         self.tests_run = 0
         self.tests_passed = 0
 
-    def run_test(self, name, method, endpoint, expected_status, data=None, files=None):
+    def run_test(self, name, method, endpoint, expected_status, data=None, files=None, auth_required=False):
         """Run a single API test"""
         url = f"{self.api_url}/{endpoint}"
         headers = {}
+        
+        if auth_required and self.admin_token:
+            headers['Authorization'] = f'Bearer {self.admin_token}'
         
         self.tests_run += 1
         print(f"\n🔍 Testing {name}...")
@@ -26,11 +30,19 @@ class StadtwacheAPITester:
             elif method == 'POST':
                 if files:
                     # For multipart/form-data (file uploads)
-                    response = requests.post(url, data=data, files=files, timeout=10)
+                    response = requests.post(url, data=data, files=files, headers=headers, timeout=10)
                 else:
                     # For JSON data
                     headers['Content-Type'] = 'application/json'
                     response = requests.post(url, json=data, headers=headers, timeout=10)
+            elif method == 'PUT':
+                if files:
+                    response = requests.put(url, data=data, files=files, headers=headers, timeout=10)
+                else:
+                    headers['Content-Type'] = 'application/json'
+                    response = requests.put(url, json=data, headers=headers, timeout=10)
+            elif method == 'DELETE':
+                response = requests.delete(url, headers=headers, timeout=10)
 
             success = response.status_code == expected_status
             if success:
