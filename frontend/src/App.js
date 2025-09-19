@@ -1354,26 +1354,79 @@ const AboutSection = () => {
   );
 };
 
-// Chat Widget Component
+// Enhanced Chat Widget Component
 const ChatWidget = () => {
   const [chatConfig, setChatConfig] = useState({});
+  const [chatButtons, setChatButtons] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
+  const [showMessageForm, setShowMessageForm] = useState(false);
+  const [messageForm, setMessageForm] = useState({
+    visitor_name: '',
+    visitor_email: '',
+    message: ''
+  });
   const [loading, setLoading] = useState(true);
+  const [sending, setSending] = useState(false);
 
   useEffect(() => {
-    const loadChatConfig = async () => {
+    const loadChatData = async () => {
       try {
-        const response = await axios.get(`${API}/chat-widget`);
-        setChatConfig(response.data);
+        const [configRes, buttonsRes] = await Promise.all([
+          axios.get(`${API}/chat-widget`),
+          axios.get(`${API}/chat/buttons`)
+        ]);
+        setChatConfig(configRes.data);
+        setChatButtons(buttonsRes.data);
       } catch (error) {
-        console.error('Error loading chat config:', error);
+        console.error('Error loading chat data:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    loadChatConfig();
+    loadChatData();
   }, []);
+
+  const handleSendMessage = async (e) => {
+    e.preventDefault();
+    setSending(true);
+
+    try {
+      await axios.post(`${API}/chat/messages`, messageForm);
+      toast.success('Nachricht gesendet! Wir antworten Ihnen per E-Mail.');
+      setMessageForm({
+        visitor_name: '',
+        visitor_email: '',
+        message: ''
+      });
+      setShowMessageForm(false);
+    } catch (error) {
+      console.error('Error sending message:', error);
+      toast.error('Fehler beim Senden der Nachricht');
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const handleButtonAction = (button) => {
+    switch (button.action) {
+      case 'email':
+        window.location.href = `mailto:${button.value}`;
+        break;
+      case 'phone':
+        window.location.href = `tel:${button.value}`;
+        break;
+      case 'link':
+        window.open(button.value, '_blank');
+        break;
+      case 'message':
+        setMessageForm(prev => ({ ...prev, message: button.value }));
+        setShowMessageForm(true);
+        break;
+      default:
+        break;
+    }
+  };
 
   if (loading || !chatConfig.enabled) {
     return null;
@@ -1416,7 +1469,10 @@ const ChatWidget = () => {
             <div className="flex justify-between items-center">
               <h3 className="font-semibold">{chatConfig.title || 'Hilfe & Support'}</h3>
               <button
-                onClick={() => setIsOpen(false)}
+                onClick={() => {
+                  setIsOpen(false);
+                  setShowMessageForm(false);
+                }}
                 className="text-white hover:text-gray-200"
               >
                 ×
@@ -1426,46 +1482,121 @@ const ChatWidget = () => {
 
           {/* Chat Content */}
           <div className="p-4 space-y-4 max-h-96 overflow-y-auto">
-            <div className="bg-slate-100 rounded-lg p-3">
-              <p className="text-sm text-slate-700">
-                {chatConfig.welcome_message || 'Hallo! Wie können wir Ihnen helfen?'}
-              </p>
-            </div>
-
-            <div className="space-y-3">
-              <h4 className="font-semibold text-slate-900">Kontakt</h4>
-              
-              <div className="space-y-2 text-sm">
-                <div className="flex items-center gap-2">
-                  <Mail className="h-4 w-4 text-slate-500" />
-                  <span>{chatConfig.contact_email}</span>
+            {!showMessageForm ? (
+              <>
+                <div className="bg-slate-100 rounded-lg p-3">
+                  <p className="text-sm text-slate-700">
+                    {chatConfig.welcome_message || 'Hallo! Wie können wir Ihnen helfen?'}
+                  </p>
                 </div>
-                
-                {chatConfig.phone_number && (
-                  <div className="flex items-center gap-2">
-                    <Phone className="h-4 w-4 text-slate-500" />
-                    <span>{chatConfig.phone_number}</span>
+
+                {/* Dynamic Chat Buttons */}
+                <div className="space-y-2">
+                  {chatButtons.map((button) => (
+                    <Button
+                      key={button.id}
+                      size="sm"
+                      variant="outline"
+                      className="w-full justify-start"
+                      onClick={() => handleButtonAction(button)}
+                    >
+                      {button.action === 'email' && <Mail className="mr-2 h-4 w-4" />}
+                      {button.action === 'phone' && <Phone className="mr-2 h-4 w-4" />}
+                      {button.action === 'link' && <Eye className="mr-2 h-4 w-4" />}
+                      {button.action === 'message' && <MessageSquare className="mr-2 h-4 w-4" />}
+                      {button.label}
+                    </Button>
+                  ))}
+                  
+                  <Button
+                    size="sm"
+                    className="w-full"
+                    onClick={() => setShowMessageForm(true)}
+                  >
+                    <MessageSquare className="mr-2 h-4 w-4" />
+                    Nachricht schreiben
+                  </Button>
+                </div>
+
+                <div className="space-y-3">
+                  <h4 className="font-semibold text-slate-900">Kontakt</h4>
+                  
+                  <div className="space-y-2 text-sm">
+                    <div className="flex items-center gap-2">
+                      <Mail className="h-4 w-4 text-slate-500" />
+                      <span>{chatConfig.contact_email}</span>
+                    </div>
+                    
+                    {chatConfig.phone_number && (
+                      <div className="flex items-center gap-2">
+                        <Phone className="h-4 w-4 text-slate-500" />
+                        <span>{chatConfig.phone_number}</span>
+                      </div>
+                    )}
+                    
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-4 w-4 text-slate-500" />
+                      <span>{chatConfig.operating_hours}</span>
+                    </div>
                   </div>
-                )}
-                
-                <div className="flex items-center gap-2">
-                  <Clock className="h-4 w-4 text-slate-500" />
-                  <span>{chatConfig.operating_hours}</span>
                 </div>
-              </div>
-
-              <div className="pt-2 border-t">
-                <Button 
-                  size="sm" 
-                  className="w-full"
-                  onClick={() => {
-                    window.location.href = `mailto:${chatConfig.contact_email}`;
-                  }}
-                >
-                  E-Mail senden
-                </Button>
-              </div>
-            </div>
+              </>
+            ) : (
+              /* Message Form */
+              <form onSubmit={handleSendMessage} className="space-y-4">
+                <div>
+                  <Label htmlFor="visitor_name">Ihr Name *</Label>
+                  <Input
+                    id="visitor_name"
+                    value={messageForm.visitor_name}
+                    onChange={(e) => setMessageForm(prev => ({ ...prev, visitor_name: e.target.value }))}
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <Label htmlFor="visitor_email">Ihre E-Mail *</Label>
+                  <Input
+                    id="visitor_email"
+                    type="email"
+                    value={messageForm.visitor_email}
+                    onChange={(e) => setMessageForm(prev => ({ ...prev, visitor_email: e.target.value }))}
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <Label htmlFor="message">Nachricht *</Label>
+                  <Textarea
+                    id="message"
+                    value={messageForm.message}
+                    onChange={(e) => setMessageForm(prev => ({ ...prev, message: e.target.value }))}
+                    rows={3}
+                    placeholder="Ihre Nachricht..."
+                    required
+                  />
+                </div>
+                
+                <div className="flex gap-2">
+                  <Button
+                    type="submit"
+                    size="sm"
+                    disabled={sending}
+                    className="flex-1"
+                  >
+                    {sending ? 'Senden...' : 'Senden'}
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setShowMessageForm(false)}
+                  >
+                    Zurück
+                  </Button>
+                </div>
+              </form>
+            )}
           </div>
         </div>
       )}
