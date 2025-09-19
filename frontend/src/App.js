@@ -920,7 +920,10 @@ const HeroSection = () => {
   return (
     <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50">
       {homepage.hero_image && (
-        <div className={`absolute inset-0 bg-[url('${API}/uploads/${homepage.hero_image}')] bg-cover bg-center opacity-10`}></div>
+        <div 
+          className="absolute inset-0 bg-cover bg-center opacity-10"
+          style={{ backgroundImage: `url('${API}/uploads/${homepage.hero_image}')` }}
+        ></div>
       )}
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <div className="mb-8">
