@@ -585,6 +585,24 @@ async def admin_update_report(
     updated_report = await db.reports.find_one({"id": report_id})
     return Report(**updated_report)
 
+@admin_router.put("/reports/{report_id}/status")
+async def admin_update_report_status(
+    report_id: str,
+    status: str = Form(...),
+    current_admin = Depends(get_current_admin)
+):
+    update_data = {
+        "status": status,
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    result = await db.reports.update_one({"id": report_id}, {"$set": update_data})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Report not found")
+    
+    updated_report = await db.reports.find_one({"id": report_id})
+    return Report(**updated_report)
+
 @admin_router.delete("/reports/{report_id}")
 async def admin_delete_report(report_id: str, current_admin = Depends(get_current_admin)):
     result = await db.reports.delete_one({"id": report_id})
