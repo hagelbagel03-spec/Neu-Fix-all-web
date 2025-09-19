@@ -1851,7 +1851,7 @@ const FeedbackForm = () => {
   );
 };
 
-const ContactSection = () => {
+const ContactSection = ({ setActiveSection }) => {
   const [homepage, setHomepage] = useState({});
   const [loading, setLoading] = useState(true);
 
