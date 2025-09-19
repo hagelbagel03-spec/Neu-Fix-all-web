@@ -145,19 +145,29 @@ const AdminDashboard = ({ onLogout }) => {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [reportsRes, newsRes, appsRes, feedbackRes, homepageRes] = await Promise.all([
+      const requests = [
         axios.get(`${API}/admin/reports`),
         axios.get(`${API}/admin/news`),
         axios.get(`${API}/admin/applications`),
         axios.get(`${API}/admin/feedback`),
-        axios.get(`${API}/admin/homepage`)
-      ]);
+        axios.get(`${API}/admin/chat/messages`),
+        axios.get(`${API}/admin/chat/buttons`),
+        axios.get(`${API}/admin/homepage`),
+        axios.get(`${API}/admin/about`),
+        axios.get(`${API}/admin/chat-widget`)
+      ];
+      
+      const [reportsRes, newsRes, appsRes, feedbackRes, chatMsgRes, chatBtnRes, homepageRes, aboutRes, chatWidgetRes] = await Promise.all(requests);
       
       setReports(reportsRes.data);
       setNews(newsRes.data);
       setApplications(appsRes.data);
       setFeedback(feedbackRes.data);
+      setChatMessages(chatMsgRes.data);
+      setChatButtons(chatBtnRes.data);
       setHomepage(homepageRes.data);
+      setAbout(aboutRes.data);
+      setChatWidget(chatWidgetRes.data);
       setHomepageForm(homepageRes.data);
     } catch (error) {
       console.error('Error loading data:', error);
