@@ -252,6 +252,73 @@ const AdminDashboard = ({ onLogout }) => {
     }
   };
 
+  const handleAboutUpdate = async (e) => {
+    e.preventDefault();
+    try {
+      const formData = new FormData();
+      Object.keys(aboutForm).forEach(key => {
+        if (aboutForm[key] !== null && aboutForm[key] !== undefined) {
+          formData.append(key, aboutForm[key]);
+        }
+      });
+
+      await axios.put(`${API}/admin/about`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      
+      toast.success('Über uns Seite aktualisiert');
+      loadData();
+    } catch (error) {
+      console.error('Error updating about page:', error);
+      toast.error('Fehler beim Aktualisieren der Über uns Seite');
+    }
+  };
+
+  const handleChatWidgetUpdate = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.put(`${API}/admin/chat-widget`, chatWidgetForm);
+      toast.success('Chat-Widget aktualisiert');
+      loadData();
+    } catch (error) {
+      console.error('Error updating chat widget:', error);
+      toast.error('Fehler beim Aktualisieren des Chat-Widgets');
+    }
+  };
+
+  const handleButtonSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      if (editingButton) {
+        await axios.put(`${API}/admin/chat/buttons/${editingButton.id}`, buttonForm);
+        toast.success('Button aktualisiert');
+      } else {
+        await axios.post(`${API}/admin/chat/buttons`, buttonForm);
+        toast.success('Button erstellt');
+      }
+      
+      setButtonForm({ label: '', action: 'email', value: '', order: 0, active: true });
+      setEditingButton(null);
+      loadData();
+    } catch (error) {
+      console.error('Error saving button:', error);
+      toast.error('Fehler beim Speichern');
+    }
+  };
+
+  const handleDeleteButton = async (buttonId) => {
+    if (window.confirm('Möchten Sie diesen Button wirklich löschen?')) {
+      try {
+        await axios.delete(`${API}/admin/chat/buttons/${buttonId}`);
+        toast.success('Button gelöscht');
+        loadData();
+      } catch (error) {
+        console.error('Error deleting button:', error);
+        toast.error('Fehler beim Löschen');
+      }
+    }
+  };
+
   const handleHomepageUpdate = async (e) => {
     e.preventDefault();
     try {
