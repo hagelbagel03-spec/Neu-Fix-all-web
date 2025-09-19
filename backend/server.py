@@ -573,6 +573,19 @@ async def get_chat_widget():
         return default_chat
     return ChatWidget(**chat)
 
+# Chat Messages - Public
+@api_router.post("/chat/messages", response_model=ChatMessage)
+async def create_chat_message(message: ChatMessageCreate):
+    chat_msg = ChatMessage(**message.dict())
+    msg_dict = prepare_for_mongo(chat_msg.dict())
+    await db.chat_messages.insert_one(msg_dict)
+    return chat_msg
+
+@api_router.get("/chat/buttons", response_model=List[ChatButton])
+async def get_chat_buttons():
+    buttons = await db.chat_buttons.find({"active": True}).sort("order", 1).to_list(100)
+    return [ChatButton(**btn) for btn in buttons]
+
 # News routes - Public
 @api_router.get("/news", response_model=List[NewsItem])
 async def get_news():
