@@ -68,9 +68,31 @@ class StadtwacheAPITester:
             print(f"❌ Failed - Error: {str(e)}")
             return False, {}
 
+    # ADMIN AUTHENTICATION TESTS
+    def test_admin_login(self):
+        """Test admin login"""
+        login_data = {
+            "username": "admin",
+            "password": "admin123"
+        }
+        success, response = self.run_test("Admin Login", "POST", "admin/login", 200, data=login_data)
+        if success and isinstance(response, dict) and 'access_token' in response:
+            self.admin_token = response['access_token']
+            print(f"   ✅ Admin token obtained: {self.admin_token[:20]}...")
+        return success, response
+
+    def test_admin_me(self):
+        """Test admin token validation"""
+        return self.run_test("Admin Me", "GET", "admin/me", 200, auth_required=True)
+
+    # PUBLIC API TESTS
     def test_root_endpoint(self):
         """Test the root API endpoint"""
         return self.run_test("Root API", "GET", "", 200)
+
+    def test_get_homepage(self):
+        """Test getting homepage content"""
+        return self.run_test("Get Homepage", "GET", "homepage", 200)
 
     def test_get_news(self):
         """Test getting news items"""
@@ -84,14 +106,9 @@ class StadtwacheAPITester:
                     print(f"   News {i+1}: {priority} - {title}")
         return success, response
 
-    def test_create_news(self):
-        """Test creating a news item"""
-        test_news = {
-            "title": "Test Nachricht",
-            "content": "Dies ist eine Test-Nachricht für die API.",
-            "priority": "normal"
-        }
-        return self.run_test("Create News", "POST", "news", 200, data=test_news)
+    def test_get_latest_news(self):
+        """Test getting latest news"""
+        return self.run_test("Get Latest News", "GET", "news/latest", 200)
 
     def test_create_application(self):
         """Test creating an application with file upload"""
@@ -113,13 +130,6 @@ class StadtwacheAPITester:
         return self.run_test("Create Application", "POST", "applications", 200, 
                            data=application_data, files=files)
 
-    def test_get_applications(self):
-        """Test getting all applications"""
-        success, response = self.run_test("Get Applications", "GET", "applications", 200)
-        if success and isinstance(response, list):
-            print(f"   Found {len(response)} applications")
-        return success, response
-
     def test_create_feedback(self):
         """Test creating feedback"""
         feedback_data = {
@@ -131,13 +141,69 @@ class StadtwacheAPITester:
         }
         return self.run_test("Create Feedback", "POST", "feedback", 200, data=feedback_data)
 
-    def test_get_feedback(self):
-        """Test getting all feedback"""
-        success, response = self.run_test("Get Feedback", "GET", "feedback", 200)
+    # ADMIN API TESTS
+    def test_admin_get_news(self):
+        """Test admin getting all news"""
+        success, response = self.run_test("Admin Get All News", "GET", "admin/news", 200, auth_required=True)
         if success and isinstance(response, list):
-            print(f"   Found {len(response)} feedback entries")
+            print(f"   Found {len(response)} news items (including unpublished)")
         return success, response
 
+    def test_admin_create_news(self):
+        """Test admin creating news"""
+        news_data = {
+            "title": "Test Admin Nachricht",
+            "content": "<p>Dies ist eine <strong>Test-Nachricht</strong> vom Admin mit HTML-Inhalt.</p>",
+            "priority": "high",
+            "published": True
+        }
+        return self.run_test("Admin Create News", "POST", "admin/news", 200, 
+                           data=news_data, auth_required=True)
+
+    def test_admin_get_applications(self):
+        """Test admin getting all applications"""
+        success, response = self.run_test("Admin Get Applications", "GET", "admin/applications", 200, auth_required=True)
+        if success and isinstance(response, list):
+            print(f"   Found {len(response)} applications")
+            for i, app in enumerate(response):
+                if isinstance(app, dict):
+                    name = app.get('name', 'Unknown')
+                    status = app.get('status', 'unknown')
+                    position = app.get('position', 'unknown')
+                    print(f"   App {i+1}: {name} - {position} - {status}")
+        return success, response
+
+    def test_admin_get_feedback(self):
+        """Test admin getting all feedback"""
+        success, response = self.run_test("Admin Get Feedback", "GET", "admin/feedback", 200, auth_required=True)
+        if success and isinstance(response, list):
+            print(f"   Found {len(response)} feedback entries")
+            for i, fb in enumerate(response):
+                if isinstance(fb, dict):
+                    name = fb.get('name', 'Unknown')
+                    rating = fb.get('rating', 0)
+                    status = fb.get('status', 'unknown')
+                    print(f"   Feedback {i+1}: {name} - {rating}/5 stars - {status}")
+        return success, response
+
+    def test_admin_get_homepage(self):
+        """Test admin getting homepage content"""
+        return self.run_test("Admin Get Homepage", "GET", "admin/homepage", 200, auth_required=True)
+
+    def test_admin_update_homepage(self):
+        """Test admin updating homepage content"""
+        homepage_data = {
+            "hero_title": "Test Stadtwache",
+            "hero_subtitle": "Test Untertitel für die API",
+            "emergency_number": "110",
+            "phone_number": "+49 123 456-789",
+            "email": "test@stadtwache.de",
+            "show_latest_news": True
+        }
+        return self.run_test("Admin Update Homepage", "PUT", "admin/homepage", 200, 
+                           data=homepage_data, files={}, auth_required=True)
+
+    # ERROR HANDLING TESTS
     def test_invalid_file_upload(self):
         """Test application with invalid file type"""
         application_data = {
@@ -166,6 +232,18 @@ class StadtwacheAPITester:
             "rating": 10  # Invalid rating (should be 1-5)
         }
         return self.run_test("Invalid Rating", "POST", "feedback", 422, data=feedback_data)
+
+    def test_unauthorized_admin_access(self):
+        """Test accessing admin endpoints without token"""
+        return self.run_test("Unauthorized Admin Access", "GET", "admin/news", 401)
+
+    def test_invalid_admin_login(self):
+        """Test admin login with wrong credentials"""
+        login_data = {
+            "username": "admin",
+            "password": "wrongpassword"
+        }
+        return self.run_test("Invalid Admin Login", "POST", "admin/login", 401, data=login_data)
 
 def main():
     print("🚀 Starting Stadtwache API Tests")
