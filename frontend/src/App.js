@@ -1057,6 +1057,323 @@ const NewsSection = () => {
   );
 };
 
+// Online Report Form
+const OnlineReportForm = () => {
+  const [formData, setFormData] = useState({
+    incident_type: '',
+    description: '',
+    location: '',
+    incident_date: '',
+    incident_time: '',
+    reporter_name: '',
+    reporter_email: '',
+    reporter_phone: '',
+    is_witness: false,
+    witnesses_present: false,
+    witness_details: '',
+    evidence_available: false,
+    evidence_description: '',
+    additional_info: ''
+  });
+  const [incidentTypes, setIncidentTypes] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const loadIncidentTypes = async () => {
+      try {
+        const response = await axios.get(`${API}/reports/types`);
+        setIncidentTypes(response.data.incident_types);
+      } catch (error) {
+        console.error('Error loading incident types:', error);
+      }
+    };
+    loadIncidentTypes();
+  }, []);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      await axios.post(`${API}/reports`, formData);
+      toast.success('Online-Meldung erfolgreich eingereicht! Wir werden uns zeitnah bei Ihnen melden.');
+      setFormData({
+        incident_type: '',
+        description: '',
+        location: '',
+        incident_date: '',
+        incident_time: '',
+        reporter_name: '',
+        reporter_email: '',
+        reporter_phone: '',
+        is_witness: false,
+        witnesses_present: false,
+        witness_details: '',
+        evidence_available: false,
+        evidence_description: '',
+        additional_info: ''
+      });
+    } catch (error) {
+      console.error('Error submitting report:', error);
+      toast.error('Fehler beim Einreichen der Meldung');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleInputChange = (field, value) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const today = new Date().toISOString().split('T')[0];
+
+  return (
+    <section className="py-20 bg-slate-50">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl font-bold text-slate-900 mb-4">Online-Meldung</h2>
+          <p className="text-xl text-slate-600">Erstatten Sie eine Meldung online</p>
+          <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+            <p className="flex items-center justify-center text-blue-800">
+              <AlertCircle className="mr-2 h-5 w-5" />
+              <strong>Bei Notfällen wählen Sie sofort die 110!</strong>
+            </p>
+          </div>
+        </div>
+
+        <Card className="max-w-4xl mx-auto">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <FileText className="h-5 w-5" />
+              Online-Meldung einreichen
+            </CardTitle>
+            <CardDescription>
+              Bitte füllen Sie alle Felder sorgfältig aus. Ihre Angaben helfen uns bei der Bearbeitung.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-8">
+              {/* Incident Details */}
+              <div className="border-b pb-6">
+                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                  <AlertCircle className="h-5 w-5" />
+                  Was ist passiert?
+                </h3>
+                
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div>
+                    <Label htmlFor="incident_type">Art des Vorfalls *</Label>
+                    <Select 
+                      value={formData.incident_type}
+                      onValueChange={(value) => handleInputChange('incident_type', value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Vorfall auswählen" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {incidentTypes.map(type => (
+                          <SelectItem key={type} value={type}>{type}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="location">Wo ist es passiert? *</Label>
+                    <Input
+                      id="location"
+                      value={formData.location}
+                      onChange={(e) => handleInputChange('location', e.target.value)}
+                      placeholder="Straße, Hausnummer, PLZ Ort"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="grid gap-4 md:grid-cols-2 mt-4">
+                  <div>
+                    <Label htmlFor="incident_date">Wann ist es passiert? (Datum) *</Label>
+                    <Input
+                      id="incident_date"
+                      type="date"
+                      value={formData.incident_date}
+                      onChange={(e) => handleInputChange('incident_date', e.target.value)}
+                      max={today}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="incident_time">Uhrzeit (ca.) *</Label>
+                    <Input
+                      id="incident_time"
+                      type="time"
+                      value={formData.incident_time}
+                      onChange={(e) => handleInputChange('incident_time', e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="mt-4">
+                  <Label htmlFor="description">Beschreibung des Vorfalls *</Label>
+                  <Textarea
+                    id="description"
+                    value={formData.description}
+                    onChange={(e) => handleInputChange('description', e.target.value)}
+                    rows={4}
+                    placeholder="Beschreiben Sie detailliert, was passiert ist..."
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Reporter Information */}
+              <div className="border-b pb-6">
+                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                  <User className="h-5 w-5" />
+                  Ihre Kontaktdaten
+                </h3>
+                
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div>
+                    <Label htmlFor="reporter_name">Ihr Name *</Label>
+                    <Input
+                      id="reporter_name"
+                      value={formData.reporter_name}
+                      onChange={(e) => handleInputChange('reporter_name', e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="reporter_email">Ihre E-Mail-Adresse *</Label>
+                    <Input
+                      id="reporter_email"
+                      type="email"
+                      value={formData.reporter_email}
+                      onChange={(e) => handleInputChange('reporter_email', e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="grid gap-4 md:grid-cols-2 mt-4">
+                  <div>
+                    <Label htmlFor="reporter_phone">Ihre Telefonnummer *</Label>
+                    <Input
+                      id="reporter_phone"
+                      value={formData.reporter_phone}
+                      onChange={(e) => handleInputChange('reporter_phone', e.target.value)}
+                      placeholder="+49 123 456789"
+                      required
+                    />
+                  </div>
+                  <div className="flex items-center space-x-2 pt-6">
+                    <input
+                      type="checkbox"
+                      id="is_witness"
+                      checked={formData.is_witness}
+                      onChange={(e) => handleInputChange('is_witness', e.target.checked)}
+                    />
+                    <Label htmlFor="is_witness">Ich war Zeuge des Vorfalls</Label>
+                  </div>
+                </div>
+              </div>
+
+              {/* Additional Details */}
+              <div className="border-b pb-6">
+                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                  <Eye className="h-5 w-5" />
+                  Weitere Details
+                </h3>
+
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="witnesses_present"
+                      checked={formData.witnesses_present}
+                      onChange={(e) => handleInputChange('witnesses_present', e.target.checked)}
+                    />
+                    <Label htmlFor="witnesses_present">Es waren weitere Zeugen anwesend</Label>
+                  </div>
+
+                  {formData.witnesses_present && (
+                    <div>
+                      <Label htmlFor="witness_details">Details zu den Zeugen</Label>
+                      <Textarea
+                        id="witness_details"
+                        value={formData.witness_details}
+                        onChange={(e) => handleInputChange('witness_details', e.target.value)}
+                        rows={2}
+                        placeholder="Namen, Kontaktdaten oder Beschreibung der Zeugen..."
+                      />
+                    </div>
+                  )}
+
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="evidence_available"
+                      checked={formData.evidence_available}
+                      onChange={(e) => handleInputChange('evidence_available', e.target.checked)}
+                    />
+                    <Label htmlFor="evidence_available">Ich habe Beweise (Fotos, Videos, Dokumente)</Label>
+                  </div>
+
+                  {formData.evidence_available && (
+                    <div>
+                      <Label htmlFor="evidence_description">Beschreibung der Beweise</Label>
+                      <Textarea
+                        id="evidence_description"
+                        value={formData.evidence_description}
+                        onChange={(e) => handleInputChange('evidence_description', e.target.value)}
+                        rows={2}
+                        placeholder="Beschreiben Sie Ihre Beweise. Diese können Sie später nachreichen."
+                      />
+                    </div>
+                  )}
+
+                  <div>
+                    <Label htmlFor="additional_info">Zusätzliche Informationen</Label>
+                    <Textarea
+                      id="additional_info"
+                      value={formData.additional_info}
+                      onChange={(e) => handleInputChange('additional_info', e.target.value)}
+                      rows={3}
+                      placeholder="Weitere wichtige Informationen zum Vorfall..."
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Legal Notice */}
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                <p className="text-sm text-yellow-800">
+                  <strong>Hinweis:</strong> Mit dem Absenden dieser Meldung bestätigen Sie, dass alle Angaben nach bestem Wissen und Gewissen gemacht wurden. 
+                  Falsche Angaben können rechtliche Konsequenzen haben.
+                </p>
+              </div>
+
+              <Button type="submit" disabled={loading} className="w-full bg-blue-600 hover:bg-blue-700">
+                {loading ? (
+                  <>
+                    <Upload className="mr-2 h-4 w-4 animate-spin" />
+                    Meldung wird eingereicht...
+                  </>
+                ) : (
+                  <>
+                    <FileText className="mr-2 h-4 w-4" />
+                    Online-Meldung einreichen
+                  </>
+                )}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    </section>
+  );
+};
+
 const ApplicationForm = () => {
   const [formData, setFormData] = useState({
     name: '',
