@@ -38,7 +38,12 @@ import {
   MessageSquare,
   UserCheck,
   Home,
-  TrendingUp
+  Search,
+  Car,
+  Activity,
+  Target,
+  TrendingUp,
+  Database
 } from "lucide-react";
 import "./App.css";
 
