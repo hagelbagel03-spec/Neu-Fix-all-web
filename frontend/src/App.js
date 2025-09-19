@@ -303,6 +303,165 @@ const AdminDashboard = ({ onLogout }) => {
             </TabsTrigger>
           </TabsList>
 
+          {/* Reports Management */}
+          <TabsContent value="reports" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Online-Meldungen verwalten</CardTitle>
+                <CardDescription>
+                  Überprüfen und bearbeiten Sie eingegangene Online-Meldungen
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Vorfall</TableHead>
+                      <TableHead>Melder</TableHead>
+                      <TableHead>Ort</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Datum</TableHead>
+                      <TableHead>Aktionen</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {reports.map((report) => (
+                      <TableRow key={report.id}>
+                        <TableCell className="font-medium">{report.incident_type}</TableCell>
+                        <TableCell>{report.reporter_name}</TableCell>
+                        <TableCell>{report.location}</TableCell>
+                        <TableCell>
+                          <Badge className={getStatusColor(report.status)}>
+                            {report.status === 'new' ? 'Neu' : 
+                             report.status === 'in_progress' ? 'In Bearbeitung' :
+                             report.status === 'resolved' ? 'Erledigt' : 'Geschlossen'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          {new Date(report.created_at).toLocaleDateString('de-DE')}
+                        </TableCell>
+                        <TableCell>
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button size="sm" variant="outline">
+                                <Eye className="mr-2 h-4 w-4" />
+                                Details
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-3xl">
+                              <DialogHeader>
+                                <DialogTitle>Online-Meldung Details</DialogTitle>
+                              </DialogHeader>
+                              <div className="space-y-4">
+                                <div className="grid gap-4 md:grid-cols-2">
+                                  <div>
+                                    <Label>Vorfall</Label>
+                                    <p className="text-sm">{report.incident_type}</p>
+                                  </div>
+                                  <div>
+                                    <Label>Ort</Label>
+                                    <p className="text-sm">{report.location}</p>
+                                  </div>
+                                  <div>
+                                    <Label>Datum/Zeit</Label>
+                                    <p className="text-sm">
+                                      {report.incident_date} um {report.incident_time}
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <Label>Melder</Label>
+                                    <p className="text-sm">{report.reporter_name}</p>
+                                  </div>
+                                  <div>
+                                    <Label>E-Mail</Label>
+                                    <p className="text-sm">{report.reporter_email}</p>
+                                  </div>
+                                  <div>
+                                    <Label>Telefon</Label>
+                                    <p className="text-sm">{report.reporter_phone}</p>
+                                  </div>
+                                </div>
+                                <div>
+                                  <Label>Beschreibung</Label>
+                                  <p className="text-sm bg-slate-50 p-3 rounded">{report.description}</p>
+                                </div>
+                                {report.additional_info && (
+                                  <div>
+                                    <Label>Zusätzliche Informationen</Label>
+                                    <p className="text-sm bg-slate-50 p-3 rounded">{report.additional_info}</p>
+                                  </div>
+                                )}
+                                
+                                {report.status === 'new' && (
+                                  <div className="space-y-4 pt-4 border-t">
+                                    <h4 className="font-semibold">Status ändern</h4>
+                                    <div className="grid gap-2 md:grid-cols-3">
+                                      <Button
+                                        onClick={async () => {
+                                          try {
+                                            await axios.put(`${API}/admin/reports/${report.id}/status`, {
+                                              status: 'in_progress'
+                                            });
+                                            toast.success('Status aktualisiert');
+                                            loadData();
+                                          } catch (error) {
+                                            console.error('Error:', error);
+                                            toast.error('Fehler beim Aktualisieren');
+                                          }
+                                        }}
+                                        className="bg-blue-600 hover:bg-blue-700"
+                                      >
+                                        In Bearbeitung
+                                      </Button>
+                                      <Button
+                                        onClick={async () => {
+                                          try {
+                                            await axios.put(`${API}/admin/reports/${report.id}/status`, {
+                                              status: 'resolved'
+                                            });
+                                            toast.success('Status aktualisiert');
+                                            loadData();
+                                          } catch (error) {
+                                            console.error('Error:', error);
+                                            toast.error('Fehler beim Aktualisieren');
+                                          }
+                                        }}
+                                        className="bg-green-600 hover:bg-green-700"
+                                      >
+                                        Erledigt
+                                      </Button>
+                                      <Button
+                                        onClick={async () => {
+                                          try {
+                                            await axios.put(`${API}/admin/reports/${report.id}/status`, {
+                                              status: 'closed'
+                                            });
+                                            toast.success('Status aktualisiert');
+                                            loadData();
+                                          } catch (error) {
+                                            console.error('Error:', error);
+                                            toast.error('Fehler beim Aktualisieren');
+                                          }
+                                        }}
+                                        variant="outline"
+                                      >
+                                        Schließen
+                                      </Button>
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            </DialogContent>
+                          </Dialog>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
           {/* News Management */}
           <TabsContent value="news" className="space-y-6">
             <Card>
