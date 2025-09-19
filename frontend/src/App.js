@@ -119,11 +119,15 @@ const AdminLogin = ({ onLogin }) => {
 // Admin Dashboard Component
 const AdminDashboard = ({ onLogout }) => {
   const [activeTab, setActiveTab] = useState('reports');
-  const [reports, setReports] = useState([]);
   const [news, setNews] = useState([]);
   const [applications, setApplications] = useState([]);
   const [feedback, setFeedback] = useState([]);
+  const [reports, setReports] = useState([]);
+  const [chatMessages, setChatMessages] = useState([]);
+  const [chatButtons, setChatButtons] = useState([]);
   const [homepage, setHomepage] = useState({});
+  const [about, setAbout] = useState({});
+  const [chatWidget, setChatWidget] = useState({});
   const [loading, setLoading] = useState(false);
 
   // News Management
