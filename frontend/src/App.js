@@ -1046,10 +1046,7 @@ const NewsSection = () => {
                   <CardTitle className="text-lg">{item.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div 
-                    className="text-slate-600"
-                    dangerouslySetInnerHTML={{ __html: item.content }}
-                  />
+                  <p className="text-slate-600">{item.content}</p>
                 </CardContent>
               </Card>
             ))
