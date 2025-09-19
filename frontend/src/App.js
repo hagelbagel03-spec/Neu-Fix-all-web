@@ -1627,10 +1627,13 @@ function App() {
                 <h3 className="font-semibold mb-4">Verwaltung</h3>
                 <ul className="space-y-2 text-slate-400">
                   <li>
-                    <a href="/admin" className="hover:text-white transition-colors">
+                    <button onClick={() => {
+                      setIsAdmin(true);
+                      window.history.pushState({}, '', '/admin');
+                    }} className="hover:text-white transition-colors">
                       <Settings className="inline mr-2 h-4 w-4" />
                       Admin Panel
-                    </a>
+                    </button>
                   </li>
                 </ul>
               </div>
