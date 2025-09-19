@@ -11,6 +11,7 @@ class StadtwacheAPITester:
         self.admin_token = None
         self.tests_run = 0
         self.tests_passed = 0
+        self.created_report_id = None  # Store created report ID for admin tests
 
     def run_test(self, name, method, endpoint, expected_status, data=None, files=None, auth_required=False):
         """Run a single API test"""
