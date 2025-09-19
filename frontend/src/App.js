@@ -139,6 +139,20 @@ const AdminDashboard = ({ onLogout }) => {
   });
   const [editingNews, setEditingNews] = useState(null);
 
+  // About page management
+  const [aboutForm, setAboutForm] = useState({});
+
+  // Chat widget management
+  const [chatWidgetForm, setChatWidgetForm] = useState({});
+  const [buttonForm, setButtonForm] = useState({
+    label: '',
+    action: 'email',
+    value: '',
+    order: 0,
+    active: true
+  });
+  const [editingButton, setEditingButton] = useState(null);
+
   // Homepage Management
   const [homepageForm, setHomepageForm] = useState({});
 
