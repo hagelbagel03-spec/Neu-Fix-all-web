@@ -1351,6 +1351,20 @@ async def startup_event():
             await db.team.insert_one(member_dict)
         logger.info("Default team created")
 
+    # Create default chat buttons if not exist
+    buttons_exist = await db.chat_buttons.find_one()
+    if not buttons_exist:
+        default_buttons = [
+            ChatButton(label="E-Mail senden", action="email", value="support@stadtwache.de", order=0),
+            ChatButton(label="Anrufen", action="phone", value="+49 123 456-789", order=1),
+            ChatButton(label="Häufige Fragen", action="message", value="Ich habe eine Frage zu...", order=2),
+            ChatButton(label="Termin vereinbaren", action="message", value="Ich möchte einen Termin vereinbaren.", order=3)
+        ]
+        for button in default_buttons:
+            button_dict = prepare_for_mongo(button.dict())
+            await db.chat_buttons.insert_one(button_dict)
+        logger.info("Default chat buttons created")
+
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
