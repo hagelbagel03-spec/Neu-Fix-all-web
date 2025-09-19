@@ -3054,7 +3054,10 @@ function App() {
             </div>
           </div>
         </footer>
-        <ChatWidget />
+        {/* Chat Widget - separated to prevent DOM conflicts */}
+        <div id="chat-widget-container">
+          <ChatWidget key="chat-widget" />
+        </div>
         <Toaster position="top-right" />
       </BrowserRouter>
     </div>
