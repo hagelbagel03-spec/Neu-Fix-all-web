@@ -1091,7 +1091,7 @@ const HeroSection = () => {
               <Phone className="mr-2 h-5 w-5" />
               Notruf: {homepage.emergency_number || '110'}
             </Button>
-            <Button size="lg" variant="outline">
+            <Button size="lg" variant="outline" onClick={() => setActiveSection('about')}>
               <Users className="mr-2 h-5 w-5" />
               Mehr erfahren
             </Button>
