@@ -745,16 +745,12 @@ const AdminDashboard = ({ onLogout }) => {
 
                   <div>
                     <Label htmlFor="hero_subtitle">Untertitel</Label>
-                    <ReactQuill
+                    <Textarea
+                      id="hero_subtitle"
                       value={homepageForm.hero_subtitle || ''}
-                      onChange={(content) => setHomepageForm(prev => ({ ...prev, hero_subtitle: content }))}
-                      modules={{
-                        toolbar: [
-                          ['bold', 'italic', 'underline'],
-                          ['link'],
-                          ['clean']
-                        ],
-                      }}
+                      onChange={(e) => setHomepageForm(prev => ({ ...prev, hero_subtitle: e.target.value }))}
+                      rows={4}
+                      placeholder="Untertitel für die Startseite..."
                     />
                   </div>
 
