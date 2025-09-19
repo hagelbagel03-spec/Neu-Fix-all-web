@@ -1226,6 +1226,245 @@ const NewsSection = () => {
 };
 
 // Online Report Form
+// About Us Section
+const AboutSection = () => {
+  const [about, setAbout] = useState({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadAboutData = async () => {
+      try {
+        const response = await axios.get(`${API}/about`);
+        setAbout(response.data);
+      } catch (error) {
+        console.error('Error loading about data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadAboutData();
+  }, []);
+
+  if (loading) {
+    return (
+      <section className="py-20 bg-white">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">Lädt...</div>
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section className="py-20 bg-white">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl font-bold text-slate-900 mb-4">
+            {about.title || 'Über uns'}
+          </h2>
+          <p className="text-xl text-slate-600">
+            {about.subtitle || 'Erfahren Sie mehr über die Stadtwache'}
+          </p>
+        </div>
+
+        <div className="grid gap-12 lg:grid-cols-2 items-center">
+          <div>
+            {about.image && (
+              <img 
+                src={`${API}/uploads/${about.image}`} 
+                alt="Über uns"
+                className="w-full h-96 object-cover rounded-lg shadow-lg"
+              />
+            )}
+          </div>
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-2xl font-semibold text-slate-900 mb-4">Unsere Geschichte</h3>
+              <p className="text-slate-600 leading-relaxed">
+                {about.content || 'Hier steht der Inhalt über das Unternehmen...'}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Mission, Vision, Values */}
+        <div className="mt-20 grid gap-8 md:grid-cols-3">
+          {about.mission && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Target className="h-5 w-5 text-blue-600" />
+                  Unsere Mission
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-slate-600">{about.mission}</p>
+              </CardContent>
+            </Card>
+          )}
+          
+          {about.vision && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Eye className="h-5 w-5 text-blue-600" />
+                  Unsere Vision
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-slate-600">{about.vision}</p>
+              </CardContent>
+            </Card>
+          )}
+          
+          {about.values && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Star className="h-5 w-5 text-blue-600" />
+                  Unsere Werte
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-slate-600">{about.values}</p>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+
+        {about.history && (
+          <div className="mt-16">
+            <h3 className="text-2xl font-semibold text-slate-900 mb-6 text-center">Unsere Geschichte</h3>
+            <div className="max-w-4xl mx-auto">
+              <p className="text-slate-600 leading-relaxed text-lg">{about.history}</p>
+            </div>
+          </div>
+        )}
+      </div>
+    </section>
+  );
+};
+
+// Chat Widget Component
+const ChatWidget = () => {
+  const [chatConfig, setChatConfig] = useState({});
+  const [isOpen, setIsOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadChatConfig = async () => {
+      try {
+        const response = await axios.get(`${API}/chat-widget`);
+        setChatConfig(response.data);
+      } catch (error) {
+        console.error('Error loading chat config:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadChatConfig();
+  }, []);
+
+  if (loading || !chatConfig.enabled) {
+    return null;
+  }
+
+  const positionClasses = chatConfig.position === 'bottom-right' 
+    ? 'bottom-4 right-4' 
+    : 'bottom-4 left-4';
+
+  return (
+    <div className={`fixed ${positionClasses} z-50`}>
+      {/* Chat Toggle Button */}
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className={`
+          w-14 h-14 rounded-full shadow-lg flex items-center justify-center text-white
+          ${chatConfig.color === 'blue' ? 'bg-blue-600 hover:bg-blue-700' : 
+            chatConfig.color === 'green' ? 'bg-green-600 hover:bg-green-700' :
+            'bg-slate-600 hover:bg-slate-700'}
+          transition-all duration-200 hover:scale-110
+        `}
+      >
+        {isOpen ? (
+          <User className="h-6 w-6" />
+        ) : (
+          <MessageSquare className="h-6 w-6" />
+        )}
+      </button>
+
+      {/* Chat Window */}
+      {isOpen && (
+        <div className="absolute bottom-16 w-80 bg-white rounded-lg shadow-xl border border-slate-200 overflow-hidden">
+          {/* Chat Header */}
+          <div className={`
+            p-4 text-white
+            ${chatConfig.color === 'blue' ? 'bg-blue-600' : 
+              chatConfig.color === 'green' ? 'bg-green-600' :
+              'bg-slate-600'}
+          `}>
+            <div className="flex justify-between items-center">
+              <h3 className="font-semibold">{chatConfig.title || 'Hilfe & Support'}</h3>
+              <button
+                onClick={() => setIsOpen(false)}
+                className="text-white hover:text-gray-200"
+              >
+                ×
+              </button>
+            </div>
+          </div>
+
+          {/* Chat Content */}
+          <div className="p-4 space-y-4 max-h-96 overflow-y-auto">
+            <div className="bg-slate-100 rounded-lg p-3">
+              <p className="text-sm text-slate-700">
+                {chatConfig.welcome_message || 'Hallo! Wie können wir Ihnen helfen?'}
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              <h4 className="font-semibold text-slate-900">Kontakt</h4>
+              
+              <div className="space-y-2 text-sm">
+                <div className="flex items-center gap-2">
+                  <Mail className="h-4 w-4 text-slate-500" />
+                  <span>{chatConfig.contact_email}</span>
+                </div>
+                
+                {chatConfig.phone_number && (
+                  <div className="flex items-center gap-2">
+                    <Phone className="h-4 w-4 text-slate-500" />
+                    <span>{chatConfig.phone_number}</span>
+                  </div>
+                )}
+                
+                <div className="flex items-center gap-2">
+                  <Clock className="h-4 w-4 text-slate-500" />
+                  <span>{chatConfig.operating_hours}</span>
+                </div>
+              </div>
+
+              <div className="pt-2 border-t">
+                <Button 
+                  size="sm" 
+                  className="w-full"
+                  onClick={() => {
+                    window.location.href = `mailto:${chatConfig.contact_email}`;
+                  }}
+                >
+                  E-Mail senden
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const OnlineReportForm = () => {
   const [formData, setFormData] = useState({
     incident_type: '',
