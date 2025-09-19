@@ -2361,6 +2361,7 @@ function App() {
             </div>
           </div>
         </footer>
+        <ChatWidget />
         <Toaster position="top-right" />
       </BrowserRouter>
     </div>
