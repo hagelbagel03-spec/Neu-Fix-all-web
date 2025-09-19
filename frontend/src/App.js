@@ -337,22 +337,13 @@ const AdminDashboard = ({ onLogout }) => {
                   
                   <div>
                     <Label htmlFor="news-content">Inhalt</Label>
-                    <ReactQuill
+                    <Textarea
+                      id="news-content"
                       value={newsForm.content}
-                      onChange={(content) => setNewsForm(prev => ({ ...prev, content }))}
-                      modules={{
-                        toolbar: [
-                          [{ 'header': [1, 2, false] }],
-                          ['bold', 'italic', 'underline'],
-                          ['link'],
-                          [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                          ['clean']
-                        ],
-                      }}
-                      formats={[
-                        'header', 'bold', 'italic', 'underline',
-                        'link', 'list', 'bullet'
-                      ]}
+                      onChange={(e) => setNewsForm(prev => ({ ...prev, content: e.target.value }))}
+                      rows={6}
+                      placeholder="Nachrichteninhalt eingeben..."
+                      required
                     />
                   </div>
 
