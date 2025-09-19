@@ -438,6 +438,31 @@ async def create_feedback(feedback: FeedbackCreate):
     await db.feedback.insert_one(feedback_dict)
     return feedback_obj
 
+# Report routes - Public
+@api_router.post("/reports", response_model=Report)
+async def create_report(report: ReportCreate):
+    report_obj = Report(**report.dict())
+    report_dict = prepare_for_mongo(report_obj.dict())
+    await db.reports.insert_one(report_dict)
+    return report_obj
+
+@api_router.get("/reports/types")
+async def get_report_types():
+    return {
+        "incident_types": [
+            "Diebstahl",
+            "Einbruch", 
+            "Vandalismus",
+            "Verkehrsunfall",
+            "Ruhestörung",
+            "Betrug",
+            "Körperverletzung",
+            "Sachbeschädigung",
+            "Verdächtige Aktivität",
+            "Andere"
+        ]
+    }
+
 # News routes - Public
 @api_router.get("/news", response_model=List[NewsItem])
 async def get_news():
