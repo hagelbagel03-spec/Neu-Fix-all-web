@@ -183,6 +183,8 @@ const AdminDashboard = ({ onLogout }) => {
       setAbout(aboutRes.data);
       setChatWidget(chatWidgetRes.data);
       setHomepageForm(homepageRes.data);
+      setAboutForm(aboutRes.data);
+      setChatWidgetForm(chatWidgetRes.data);
     } catch (error) {
       console.error('Error loading data:', error);
       toast.error('Fehler beim Laden der Daten');
