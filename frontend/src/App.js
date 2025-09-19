@@ -842,6 +842,7 @@ const Navigation = ({ activeSection, setActiveSection }) => {
             {[
               { id: 'home', label: 'Startseite' },
               { id: 'news', label: 'Aktuelles' },
+              { id: 'report', label: 'Online-Melden' },
               { id: 'apply', label: 'Bewerbung' },
               { id: 'feedback', label: 'Feedback' },
               { id: 'contact', label: 'Kontakt' }
