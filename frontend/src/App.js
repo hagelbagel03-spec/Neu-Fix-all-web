@@ -140,13 +140,15 @@ const AdminDashboard = ({ onLogout }) => {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [newsRes, appsRes, feedbackRes, homepageRes] = await Promise.all([
+      const [reportsRes, newsRes, appsRes, feedbackRes, homepageRes] = await Promise.all([
+        axios.get(`${API}/admin/reports`),
         axios.get(`${API}/admin/news`),
         axios.get(`${API}/admin/applications`),
         axios.get(`${API}/admin/feedback`),
         axios.get(`${API}/admin/homepage`)
       ]);
       
+      setReports(reportsRes.data);
       setNews(newsRes.data);
       setApplications(appsRes.data);
       setFeedback(feedbackRes.data);
