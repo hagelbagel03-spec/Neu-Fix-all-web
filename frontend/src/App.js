@@ -280,10 +280,14 @@ const AdminDashboard = ({ onLogout }) => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
+            <TabsTrigger value="reports">
+              <FileText className="mr-2 h-4 w-4" />
+              Online-Meldungen ({reports.filter(r => r.status === 'new').length})
+            </TabsTrigger>
             <TabsTrigger value="news">
               <FileText className="mr-2 h-4 w-4" />
-              Meldungen
+              News
             </TabsTrigger>
             <TabsTrigger value="applications">
               <User className="mr-2 h-4 w-4" />
