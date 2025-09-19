@@ -1966,16 +1966,20 @@ const ContactSection = () => {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <AlertCircle className="h-5 w-5 text-orange-600" />
-                Online-Anzeige
+                <FileText className="h-5 w-5 text-blue-600" />
+                Online-Meldung
               </CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-slate-600 mb-3">
-                Erstatten Sie eine Anzeige online
+                Erstatten Sie eine Meldung online
               </p>
-              <Button variant="outline" className="w-full">
-                Zur Online-Anzeige
+              <Button 
+                variant="outline" 
+                className="w-full"
+                onClick={() => setActiveSection('report')}
+              >
+                Online-Meldung erstatten
               </Button>
             </CardContent>
           </Card>
