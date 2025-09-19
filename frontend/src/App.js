@@ -1863,6 +1863,8 @@ function App() {
         return <HeroSection />;
       case 'news':
         return <NewsSection />;
+      case 'report':
+        return <OnlineReportForm />;
       case 'apply':
         return <ApplicationForm />;
       case 'feedback':
