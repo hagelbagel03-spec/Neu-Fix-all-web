@@ -141,6 +141,65 @@ class StadtwacheAPITester:
         }
         return self.run_test("Create Feedback", "POST", "feedback", 200, data=feedback_data)
 
+    # ONLINE REPORTS TESTS (NEW FUNCTIONALITY)
+    def test_get_report_types(self):
+        """Test getting incident types for reports"""
+        success, response = self.run_test("Get Report Types", "GET", "reports/types", 200)
+        if success and isinstance(response, dict):
+            incident_types = response.get('incident_types', [])
+            expected_count = 10  # Should have 10 incident types
+            if len(incident_types) == expected_count:
+                print(f"   ✅ Found all {expected_count} incident types")
+                print(f"   Types: {', '.join(incident_types[:3])}...")
+            else:
+                print(f"   ⚠️  Expected {expected_count} types, found {len(incident_types)}")
+        return success, response
+
+    def test_create_report(self):
+        """Test creating an online report"""
+        report_data = {
+            "incident_type": "Diebstahl",
+            "description": "Test-Meldung: Fahrrad wurde vor dem Supermarkt gestohlen. Das Schloss wurde aufgebrochen.",
+            "location": "Hauptstraße 123, 12345 Teststadt",
+            "incident_date": "2024-12-19",
+            "incident_time": "14:30",
+            "reporter_name": "Max Mustermann",
+            "reporter_email": "max.mustermann@test.de",
+            "reporter_phone": "+49 123 456789",
+            "is_witness": True,
+            "witnesses_present": False,
+            "witness_details": "",
+            "evidence_available": True,
+            "evidence_description": "Foto vom leeren Fahrradständer und aufgebrochenem Schloss",
+            "additional_info": "Das Fahrrad war ein rotes Mountainbike der Marke Trek"
+        }
+        success, response = self.run_test("Create Report", "POST", "reports", 200, data=report_data)
+        if success and isinstance(response, dict):
+            report_id = response.get('id')
+            status = response.get('status')
+            if report_id and status == 'new':
+                print(f"   ✅ Report created with ID: {report_id}")
+                print(f"   Status: {status}")
+                # Store for later admin tests
+                self.created_report_id = report_id
+            else:
+                print(f"   ⚠️  Report creation issue - ID: {report_id}, Status: {status}")
+        return success, response
+
+    def test_invalid_report_data(self):
+        """Test creating report with invalid data"""
+        invalid_report_data = {
+            "incident_type": "",  # Empty required field
+            "description": "",    # Empty required field
+            "location": "Test Location",
+            "incident_date": "2024-12-19",
+            "incident_time": "14:30",
+            "reporter_name": "",  # Empty required field
+            "reporter_email": "invalid-email",  # Invalid email
+            "reporter_phone": "+49 123 456789"
+        }
+        return self.run_test("Invalid Report Data", "POST", "reports", 422, data=invalid_report_data)
+
     # ADMIN API TESTS
     def test_admin_get_news(self):
         """Test admin getting all news"""
