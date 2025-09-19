@@ -1034,7 +1034,7 @@ const Navigation = ({ activeSection, setActiveSection }) => {
 };
 
 // Updated Hero Section with Dynamic Content
-const HeroSection = () => {
+const HeroSection = ({ setActiveSection }) => {
   const [homepage, setHomepage] = useState({});
   const [latestNews, setLatestNews] = useState(null);
   const [loading, setLoading] = useState(true);
