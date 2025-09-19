@@ -37,7 +37,8 @@ import {
   Save,
   MessageSquare,
   UserCheck,
-  Home
+  Home,
+  TrendingUp
 } from "lucide-react";
 import "./App.css";
 
