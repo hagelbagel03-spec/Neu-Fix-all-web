@@ -1578,8 +1578,8 @@ function App() {
     }
   };
 
-  // Admin Panel Route
-  if (window.location.pathname.includes('/admin')) {
+  // Admin Panel Route Check
+  if (isAdmin || window.location.pathname.includes('/admin')) {
     if (!isLoggedIn) {
       return <AdminLogin onLogin={handleAdminLogin} />;
     }
