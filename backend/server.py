@@ -297,6 +297,51 @@ class ReportCreate(BaseModel):
     evidence_description: Optional[str] = None
     additional_info: Optional[str] = None
 
+class AboutPage(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    title: str = Field(default="Über uns")
+    subtitle: str = Field(default="Erfahren Sie mehr über die Stadtwache")
+    content: str = Field(default="Hier steht der Inhalt über das Unternehmen...")
+    mission: Optional[str] = None
+    vision: Optional[str] = None
+    values: Optional[str] = None
+    history: Optional[str] = None
+    image: Optional[str] = None
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class AboutPageUpdate(BaseModel):
+    title: Optional[str] = None
+    subtitle: Optional[str] = None
+    content: Optional[str] = None
+    mission: Optional[str] = None
+    vision: Optional[str] = None
+    values: Optional[str] = None
+    history: Optional[str] = None
+
+class ChatWidget(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    enabled: bool = Field(default=True)
+    title: str = Field(default="Hilfe & Support")
+    welcome_message: str = Field(default="Hallo! Wie können wir Ihnen helfen?")
+    offline_message: str = Field(default="Wir sind derzeit nicht verfügbar. Hinterlassen Sie uns eine Nachricht.")
+    position: str = Field(default="bottom-left")  # bottom-left, bottom-right
+    color: str = Field(default="blue")
+    contact_email: str = Field(default="support@stadtwache.de")
+    phone_number: Optional[str] = None
+    operating_hours: str = Field(default="Mo-Fr: 8:00-18:00")
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class ChatWidgetUpdate(BaseModel):
+    enabled: Optional[bool] = None
+    title: Optional[str] = None
+    welcome_message: Optional[str] = None
+    offline_message: Optional[str] = None
+    position: Optional[str] = None
+    color: Optional[str] = None
+    contact_email: Optional[str] = None
+    phone_number: Optional[str] = None
+    operating_hours: Optional[str] = None
+
 class ReportUpdate(BaseModel):
     status: Optional[str] = None
     priority: Optional[str] = None
