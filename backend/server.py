@@ -250,6 +250,60 @@ class AdminLogin(BaseModel):
     username: str
     password: str
 
+class Report(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    # Incident Details
+    incident_type: str  # "Diebstahl", "Vandalismus", "Verkehrsunfall", "Andere"
+    description: str
+    location: str
+    incident_date: str
+    incident_time: str
+    
+    # Reporter Information
+    reporter_name: str
+    reporter_email: EmailStr
+    reporter_phone: str
+    is_witness: bool = Field(default=False)
+    
+    # Additional Details
+    witnesses_present: bool = Field(default=False)
+    witness_details: Optional[str] = None
+    evidence_available: bool = Field(default=False)
+    evidence_description: Optional[str] = None
+    additional_info: Optional[str] = None
+    
+    # Administrative
+    status: str = Field(default="new")  # new, under_review, completed, closed
+    priority: str = Field(default="normal")  # low, normal, high, urgent
+    assigned_officer: Optional[str] = None
+    admin_notes: Optional[str] = None
+    admin_response: Optional[str] = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: Optional[datetime] = None
+
+class ReportCreate(BaseModel):
+    incident_type: str
+    description: str
+    location: str
+    incident_date: str
+    incident_time: str
+    reporter_name: str
+    reporter_email: EmailStr
+    reporter_phone: str
+    is_witness: bool = Field(default=False)
+    witnesses_present: bool = Field(default=False)
+    witness_details: Optional[str] = None
+    evidence_available: bool = Field(default=False)
+    evidence_description: Optional[str] = None
+    additional_info: Optional[str] = None
+
+class ReportUpdate(BaseModel):
+    status: Optional[str] = None
+    priority: Optional[str] = None
+    assigned_officer: Optional[str] = None
+    admin_notes: Optional[str] = None
+    admin_response: Optional[str] = None
+
 class AdminUser(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     username: str
