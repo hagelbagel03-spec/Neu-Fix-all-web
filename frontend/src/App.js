@@ -985,6 +985,466 @@ const AdminDashboard = ({ onLogout }) => {
             </Card>
           </TabsContent>
 
+          {/* About Us Management */}
+          <TabsContent value="about" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Über uns Seite bearbeiten</CardTitle>
+                <CardDescription>
+                  Bearbeiten Sie den Inhalt der Über uns Seite
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleAboutUpdate} className="space-y-6">
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div>
+                      <Label htmlFor="about_title">Titel</Label>
+                      <Input
+                        id="about_title"
+                        value={aboutForm.title || ''}
+                        onChange={(e) => setAboutForm(prev => ({ ...prev, title: e.target.value }))}
+                        placeholder="Über uns"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="about_subtitle">Untertitel</Label>
+                      <Input
+                        id="about_subtitle"
+                        value={aboutForm.subtitle || ''}
+                        onChange={(e) => setAboutForm(prev => ({ ...prev, subtitle: e.target.value }))}
+                        placeholder="Erfahren Sie mehr über die Stadtwache"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="about_content">Hauptinhalt</Label>
+                    <Textarea
+                      id="about_content"
+                      value={aboutForm.content || ''}
+                      onChange={(e) => setAboutForm(prev => ({ ...prev, content: e.target.value }))}
+                      rows={6}
+                      placeholder="Hier steht der Inhalt über das Unternehmen..."
+                    />
+                  </div>
+
+                  <div className="grid gap-4 md:grid-cols-3">
+                    <div>
+                      <Label htmlFor="about_mission">Unsere Mission</Label>
+                      <Textarea
+                        id="about_mission"
+                        value={aboutForm.mission || ''}
+                        onChange={(e) => setAboutForm(prev => ({ ...prev, mission: e.target.value }))}
+                        rows={3}
+                        placeholder="Mission der Stadtwache..."
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="about_vision">Unsere Vision</Label>
+                      <Textarea
+                        id="about_vision"
+                        value={aboutForm.vision || ''}
+                        onChange={(e) => setAboutForm(prev => ({ ...prev, vision: e.target.value }))}
+                        rows={3}
+                        placeholder="Vision der Stadtwache..."
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="about_values">Unsere Werte</Label>
+                      <Textarea
+                        id="about_values"
+                        value={aboutForm.values || ''}
+                        onChange={(e) => setAboutForm(prev => ({ ...prev, values: e.target.value }))}
+                        rows={3}
+                        placeholder="Werte der Stadtwache..."
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="about_history">Geschichte</Label>
+                    <Textarea
+                      id="about_history"
+                      value={aboutForm.history || ''}
+                      onChange={(e) => setAboutForm(prev => ({ ...prev, history: e.target.value }))}
+                      rows={4}
+                      placeholder="Die Geschichte der Stadtwache..."
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="about_image">Über uns Bild</Label>
+                    <input
+                      id="about_image"
+                      type="file"
+                      accept=".jpg,.jpeg,.png,.webp"
+                      onChange={(e) => setAboutForm(prev => ({ ...prev, about_image: e.target.files[0] }))}
+                      className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                    />
+                  </div>
+
+                  <Button type="submit">
+                    <Save className="mr-2 h-4 w-4" />
+                    Über uns Seite aktualisieren
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Chat Widget Management */}
+          <TabsContent value="chat" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Chat-Widget Einstellungen</CardTitle>
+                <CardDescription>
+                  Konfigurieren Sie das Chat-Widget für Ihre Website
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleChatWidgetUpdate} className="space-y-6">
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div>
+                      <Label htmlFor="chat_title">Widget-Titel</Label>
+                      <Input
+                        id="chat_title"
+                        value={chatWidgetForm.title || ''}
+                        onChange={(e) => setChatWidgetForm(prev => ({ ...prev, title: e.target.value }))}
+                        placeholder="Hilfe & Support"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="chat_position">Position</Label>
+                      <Select 
+                        value={chatWidgetForm.position || 'bottom-left'}
+                        onValueChange={(value) => setChatWidgetForm(prev => ({ ...prev, position: value }))}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="bottom-left">Unten Links</SelectItem>
+                          <SelectItem value="bottom-right">Unten Rechts</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="chat_welcome">Willkommensnachricht</Label>
+                    <Textarea
+                      id="chat_welcome"
+                      value={chatWidgetForm.welcome_message || ''}
+                      onChange={(e) => setChatWidgetForm(prev => ({ ...prev, welcome_message: e.target.value }))}
+                      rows={2}
+                      placeholder="Hallo! Wie können wir Ihnen helfen?"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="chat_offline">Offline-Nachricht</Label>
+                    <Textarea
+                      id="chat_offline"
+                      value={chatWidgetForm.offline_message || ''}
+                      onChange={(e) => setChatWidgetForm(prev => ({ ...prev, offline_message: e.target.value }))}
+                      rows={2}
+                      placeholder="Wir sind derzeit nicht verfügbar..."
+                    />
+                  </div>
+
+                  <div className="grid gap-4 md:grid-cols-3">
+                    <div>
+                      <Label htmlFor="chat_color">Farbe</Label>
+                      <Select 
+                        value={chatWidgetForm.color || 'blue'}
+                        onValueChange={(value) => setChatWidgetForm(prev => ({ ...prev, color: value }))}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="blue">Blau</SelectItem>
+                          <SelectItem value="green">Grün</SelectItem>
+                          <SelectItem value="gray">Grau</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label htmlFor="chat_email">Support E-Mail</Label>
+                      <Input
+                        id="chat_email"
+                        type="email"
+                        value={chatWidgetForm.contact_email || ''}
+                        onChange={(e) => setChatWidgetForm(prev => ({ ...prev, contact_email: e.target.value }))}
+                        placeholder="support@stadtwache.de"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="chat_phone">Telefonnummer</Label>
+                      <Input
+                        id="chat_phone"
+                        value={chatWidgetForm.phone_number || ''}
+                        onChange={(e) => setChatWidgetForm(prev => ({ ...prev, phone_number: e.target.value }))}
+                        placeholder="+49 123 456-789"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="chat_hours">Öffnungszeiten</Label>
+                    <Input
+                      id="chat_hours"
+                      value={chatWidgetForm.operating_hours || ''}
+                      onChange={(e) => setChatWidgetForm(prev => ({ ...prev, operating_hours: e.target.value }))}
+                      placeholder="Mo-Fr: 8:00-18:00"
+                    />
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="chat_enabled"
+                      checked={chatWidgetForm.enabled || false}
+                      onChange={(e) => setChatWidgetForm(prev => ({ ...prev, enabled: e.target.checked }))}
+                    />
+                    <Label htmlFor="chat_enabled">Chat-Widget aktivieren</Label>
+                  </div>
+
+                  <Button type="submit">
+                    <Save className="mr-2 h-4 w-4" />
+                    Chat-Widget aktualisieren
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+
+            {/* Chat Buttons Management */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  {editingButton ? <Edit className="h-5 w-5" /> : <Plus className="h-5 w-5" />}
+                  {editingButton ? 'Button bearbeiten' : 'Neuen Chat-Button erstellen'}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleButtonSubmit} className="space-y-4">
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div>
+                      <Label htmlFor="button_label">Button-Text</Label>
+                      <Input
+                        id="button_label"
+                        value={buttonForm.label}
+                        onChange={(e) => setButtonForm(prev => ({ ...prev, label: e.target.value }))}
+                        placeholder="E-Mail senden"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="button_action">Aktion</Label>
+                      <Select 
+                        value={buttonForm.action}
+                        onValueChange={(value) => setButtonForm(prev => ({ ...prev, action: value }))}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="email">E-Mail senden</SelectItem>
+                          <SelectItem value="phone">Anrufen</SelectItem>
+                          <SelectItem value="link">Link öffnen</SelectItem>
+                          <SelectItem value="message">Vordefinierte Nachricht</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="button_value">
+                      {buttonForm.action === 'email' ? 'E-Mail-Adresse' :
+                       buttonForm.action === 'phone' ? 'Telefonnummer' :
+                       buttonForm.action === 'link' ? 'URL' : 'Nachrichtentext'}
+                    </Label>
+                    <Input
+                      id="button_value"
+                      value={buttonForm.value}
+                      onChange={(e) => setButtonForm(prev => ({ ...prev, value: e.target.value }))}
+                      placeholder={
+                        buttonForm.action === 'email' ? 'support@stadtwache.de' :
+                        buttonForm.action === 'phone' ? '+49 123 456-789' :
+                        buttonForm.action === 'link' ? 'https://example.com' :
+                        'Ich habe eine Frage zu...'
+                      }
+                      required
+                    />
+                  </div>
+
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div>
+                      <Label htmlFor="button_order">Reihenfolge</Label>
+                      <Input
+                        id="button_order"
+                        type="number"
+                        value={buttonForm.order}
+                        onChange={(e) => setButtonForm(prev => ({ ...prev, order: parseInt(e.target.value) }))}
+                      />
+                    </div>
+                    <div className="flex items-center space-x-2 pt-6">
+                      <input
+                        type="checkbox"
+                        id="button_active"
+                        checked={buttonForm.active}
+                        onChange={(e) => setButtonForm(prev => ({ ...prev, active: e.target.checked }))}
+                      />
+                      <Label htmlFor="button_active">Aktiv</Label>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <Button type="submit">
+                      <Save className="mr-2 h-4 w-4" />
+                      {editingButton ? 'Aktualisieren' : 'Erstellen'}
+                    </Button>
+                    {editingButton && (
+                      <Button 
+                        type="button" 
+                        variant="outline"
+                        onClick={() => {
+                          setEditingButton(null);
+                          setButtonForm({ label: '', action: 'email', value: '', order: 0, active: true });
+                        }}
+                      >
+                        Abbrechen
+                      </Button>
+                    )}
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Alle Chat-Buttons</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {chatButtons.map((button) => (
+                    <div key={button.id} className="border rounded-lg p-4">
+                      <div className="flex justify-between items-start mb-2">
+                        <div>
+                          <h3 className="font-semibold text-lg">{button.label}</h3>
+                          <p className="text-slate-600">
+                            {button.action === 'email' ? '📧 E-Mail' :
+                             button.action === 'phone' ? '📞 Telefon' :
+                             button.action === 'link' ? '🔗 Link' : '💬 Nachricht'}: {button.value}
+                          </p>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              setEditingButton(button);
+                              setButtonForm({
+                                label: button.label,
+                                action: button.action,
+                                value: button.value,
+                                order: button.order,
+                                active: button.active
+                              });
+                            }}
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleDeleteButton(button.id)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-slate-500">
+                        <span>Reihenfolge: {button.order}</span>
+                        <span>•</span>
+                        <span>{button.active ? 'Aktiv' : 'Inaktiv'}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Chat Messages */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Eingegangene Chat-Nachrichten</CardTitle>
+                <CardDescription>
+                  Nachrichten von Website-Besuchern ({chatMessages.filter(msg => msg.status === 'new').length} neue)
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {chatMessages.length === 0 ? (
+                    <p className="text-slate-500 text-center py-8">Noch keine Chat-Nachrichten eingegangen.</p>
+                  ) : (
+                    chatMessages.map((message) => (
+                      <div key={message.id} className="border rounded-lg p-4">
+                        <div className="flex justify-between items-start mb-2">
+                          <div>
+                            <h4 className="font-semibold">{message.visitor_name}</h4>
+                            <p className="text-sm text-slate-500">{message.visitor_email}</p>
+                          </div>
+                          <div className="text-right">
+                            <Badge className={message.status === 'new' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}>
+                              {message.status === 'new' ? 'Neu' : 'Beantwortet'}
+                            </Badge>
+                            <p className="text-xs text-slate-500 mt-1">
+                              {new Date(message.created_at).toLocaleDateString('de-DE')} {new Date(message.created_at).toLocaleTimeString('de-DE')}
+                            </p>
+                          </div>
+                        </div>
+                        <p className="text-slate-700 mb-3">{message.message}</p>
+                        
+                        {message.admin_response && (
+                          <div className="bg-blue-50 border-l-4 border-blue-400 p-3">
+                            <p className="text-sm text-blue-800">
+                              <strong>Admin-Antwort:</strong> {message.admin_response}
+                            </p>
+                          </div>
+                        )}
+                        
+                        {message.status === 'new' && (
+                          <div className="mt-3">
+                            <Button
+                              size="sm"
+                              onClick={async () => {
+                                try {
+                                  await axios.put(`${API}/admin/chat/messages/${message.id}/respond`, {
+                                    message_id: message.id,
+                                    admin_response: 'Vielen Dank für Ihre Nachricht. Wir haben sie erhalten und werden uns per E-Mail bei Ihnen melden.'
+                                  });
+                                  toast.success('Nachricht als beantwortet markiert');
+                                  loadData();
+                                } catch (error) {
+                                  console.error('Error:', error);
+                                  toast.error('Fehler beim Aktualisieren');
+                                }
+                              }}
+                            >
+                              <CheckCircle className="mr-2 h-4 w-4" />
+                              Als beantwortet markieren
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    ))
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
           {/* Homepage Management */}
           <TabsContent value="homepage" className="space-y-6">
             <Card>
