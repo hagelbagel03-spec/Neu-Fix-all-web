@@ -563,6 +563,47 @@ async def admin_delete_news(news_id: str, current_admin = Depends(get_current_ad
         raise HTTPException(status_code=404, detail="News not found")
     return {"message": "News deleted successfully"}
 
+# Admin Reports Management
+@admin_router.get("/reports", response_model=List[Report])
+async def admin_get_reports(current_admin = Depends(get_current_admin)):
+    reports = await db.reports.find().sort("created_at", -1).to_list(1000)
+    return [Report(**report) for report in reports]
+
+@admin_router.put("/reports/{report_id}")
+async def admin_update_report(
+    report_id: str, 
+    report_update: ReportUpdate, 
+    current_admin = Depends(get_current_admin)
+):
+    update_data = {k: v for k, v in report_update.dict().items() if v is not None}
+    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    result = await db.reports.update_one({"id": report_id}, {"$set": update_data})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Report not found")
+    
+    updated_report = await db.reports.find_one({"id": report_id})
+    return Report(**updated_report)
+
+@admin_router.delete("/reports/{report_id}")
+async def admin_delete_report(report_id: str, current_admin = Depends(get_current_admin)):
+    result = await db.reports.delete_one({"id": report_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Report not found")
+    return {"message": "Report deleted successfully"}
+
+@admin_router.get("/reports/stats")
+async def admin_get_report_stats(current_admin = Depends(get_current_admin)):
+    total_reports = await db.reports.count_documents({})
+    new_reports = await db.reports.count_documents({"status": "new"})
+    urgent_reports = await db.reports.count_documents({"priority": "urgent"})
+    
+    return {
+        "total_reports": total_reports,
+        "new_reports": new_reports,
+        "urgent_reports": urgent_reports
+    }
+
 # Admin Applications Management
 @admin_router.get("/applications", response_model=List[Application])
 async def admin_get_applications(current_admin = Depends(get_current_admin)):
